@@ -54,9 +54,14 @@ func EncodeKeyForIOS(raw string) string {
 	return strings.ReplaceAll(EncodeKey(raw), "=", "")
 }
 
+// padding returns string with padding for base32
+func padding(s string) string {
+	return s + strings.Repeat("=", len(s)%8)
+}
+
 // DecodeKey returns decoded key
 func DecodeKey(key string) ([]byte, error) {
-	return base32.StdEncoding.DecodeString(strings.ToUpper(key))
+	return base32.StdEncoding.DecodeString(strings.ToUpper(padding(key)))
 }
 
 func checkDigits(digits uint32) error {
