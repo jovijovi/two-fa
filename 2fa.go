@@ -6,6 +6,7 @@ import (
 	"encoding/base32"
 	"encoding/binary"
 	"errors"
+	"fmt"
 	"strings"
 	"time"
 )
@@ -14,6 +15,11 @@ const (
 	CodeDigits6 = 6
 	CodeDigits7 = 7
 	CodeDigits8 = 8
+
+	// TotpFormatter TOTP formatter
+	// Example:
+	// otpauth://totp/NAME?secret=KEY
+	TotpFormatter = "otpauth://totp/%s?secret=%s"
 )
 
 var (
@@ -47,14 +53,22 @@ func GetCodeByRaw(key Key) (uint32, error) {
 // EncodeKey returns encoded key
 func EncodeKey(raw string, opt ...OptionFunc) string {
 	opts := NewOptions(opt...)
+	key := ""
 	if opts.WithHash {
 		digest, err := opts.HashFunc.Hash([]byte(raw))
 		if err != nil {
 			return ""
 		}
-		return strings.ToUpper(base32.StdEncoding.EncodeToString(digest))
+		key = strings.ToUpper(base32.StdEncoding.EncodeToString(digest))
+	} else {
+		key = strings.ToUpper(base32.StdEncoding.EncodeToString([]byte(raw)))
 	}
-	return strings.ToUpper(base32.StdEncoding.EncodeToString([]byte(raw)))
+
+	if opts.WithQR {
+		_ = PrintQR(fmt.Sprintf(TotpFormatter, opts.KeyName, key))
+	}
+
+	return key
 }
 
 // EncodeKeyForIOS returns encoded key for iOS

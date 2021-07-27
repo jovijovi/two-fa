@@ -12,6 +12,12 @@ type Options struct {
 	// With hash
 	WithHash bool
 
+	// Key name
+	KeyName string
+
+	// With QR
+	WithQR bool
+
 	// Options for implementations of the interface can be stored in a context
 	Context context.Context
 }
@@ -46,5 +52,13 @@ func WithHashFunc(hashFunc IHashFunc) OptionFunc {
 	return func(o *Options) {
 		o.HashFunc = hashFunc
 		o.WithHash = true
+	}
+}
+
+// WithQR option to configure hash function
+func WithQR(name string) OptionFunc {
+	return func(o *Options) {
+		o.KeyName = name
+		o.WithQR = true
 	}
 }

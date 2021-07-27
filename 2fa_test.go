@@ -74,6 +74,7 @@ func TestGetCodeByRawKey(t *testing.T) {
 func TestEncodeKey(t *testing.T) {
 	key := twofa.EncodeKey(mockRawKey)
 	t.Log("Key=", key)
+	assert.NotEmpty(t, key)
 	assert.Equal(t, key, mockKey)
 
 	code, err := twofa.GetCode(key)
@@ -93,6 +94,28 @@ func TestEncodeKey(t *testing.T) {
 func TestEncodeKeyWithHash(t *testing.T) {
 	key := twofa.EncodeKey(mockRawKey, twofa.WithDefaultHashFunc())
 	t.Log("Key=", key)
+	assert.NotEmpty(t, key)
+	assert.Equal(t, key, mockKeyWithHash)
+
+	code, err := twofa.GetCode(key)
+	if err != nil {
+		t.Fatal(err)
+	}
+	t.Log("Code=", code)
+
+	rawHash, err := twofa.DecodeKey(key)
+	if err != nil {
+		t.Fatal(err)
+	}
+	t.Logf("RawHash=%x", string(rawHash))
+}
+
+func TestEncodeKeyWithQR(t *testing.T) {
+	key := twofa.EncodeKey(mockRawKey,
+		twofa.WithDefaultHashFunc(),
+		twofa.WithQR("test1"))
+	t.Log("Key=", key)
+	assert.NotEmpty(t, key)
 	assert.Equal(t, key, mockKeyWithHash)
 
 	code, err := twofa.GetCode(key)
@@ -156,4 +179,10 @@ func TestGenKeyForIOS(t *testing.T) {
 		t.Fatal(err)
 	}
 	t.Logf("Raw=%x", string(raw))
+}
+
+func TestQR(t *testing.T) {
+	if err := twofa.PrintQR("Hello, world!"); err != nil {
+		t.Fatal(err)
+	}
 }
