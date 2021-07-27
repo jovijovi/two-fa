@@ -62,6 +62,21 @@ func EncodeKeyForIOS(raw string, opt ...OptionFunc) string {
 	return strings.ReplaceAll(EncodeKey(raw, opt...), "=", "")
 }
 
+// GenKey returns random encoded key
+func GenKey(opt ...OptionFunc) string {
+	randValue, err := newRand()
+	if err != nil {
+		return ""
+	}
+
+	return EncodeKey(string(randValue), opt...)
+}
+
+// GenKeyForIOS returns random encoded key for iOS
+func GenKeyForIOS(opt ...OptionFunc) string {
+	return strings.ReplaceAll(GenKey(opt...), "=", "")
+}
+
 // padding returns string with padding for base32
 func padding(s string) string {
 	return s + strings.Repeat("=", len(s)%8)

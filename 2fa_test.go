@@ -108,6 +108,23 @@ func TestEncodeKeyWithHash(t *testing.T) {
 	t.Logf("RawHash=%x", string(rawHash))
 }
 
+func TestGenKey(t *testing.T) {
+	key := twofa.GenKey()
+	t.Log("Key=", key)
+
+	code, err := twofa.GetCode(key)
+	if err != nil {
+		t.Fatal(err)
+	}
+	t.Log("Code=", code)
+
+	raw, err := twofa.DecodeKey(key)
+	if err != nil {
+		t.Fatal(err)
+	}
+	t.Logf("Raw=%x", string(raw))
+}
+
 func TestEncodeKeyForIOS(t *testing.T) {
 	key := twofa.EncodeKeyForIOS(mockRawKey)
 	t.Log("Key=", key)
@@ -122,4 +139,21 @@ func TestEncodeKeyWithHashForIOS(t *testing.T) {
 		t.Fatal(err)
 	}
 	t.Logf("RawHash=%x", string(rawHash))
+}
+
+func TestGenKeyForIOS(t *testing.T) {
+	key := twofa.GenKeyForIOS()
+	t.Log("Key=", key)
+
+	code, err := twofa.GetCode(key)
+	if err != nil {
+		t.Fatal(err)
+	}
+	t.Log("Code=", code)
+
+	raw, err := twofa.DecodeKey(key)
+	if err != nil {
+		t.Fatal(err)
+	}
+	t.Logf("Raw=%x", string(raw))
 }
