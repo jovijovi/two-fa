@@ -1,6 +1,7 @@
 package twofa_test
 
 import (
+	"crypto/sha256"
 	"testing"
 
 	twofa "github.com/jovijovi/two-fa"
@@ -9,9 +10,31 @@ import (
 )
 
 const (
-	mockKey    = "JBSWY3DPFQQHO33SNRSCC==="
-	mockRawKey = "Hello, world!"
+	mockKey         = "JBSWY3DPFQQHO33SNRSCC==="
+	mockRawKey      = "Hello, world!"
+	mockKeyWithHash = "SQ5HALIG6NCZTLXB7DNI56PXFFQDDVUZ"
 )
+
+type CustomHashFunc struct {
+	twofa.HashFunc
+}
+
+// Custom impl of hash
+func (h *CustomHashFunc) Hash(msg []byte) ([]byte, error) {
+	provider := h.Provider()
+	if _, err := provider.Write(msg); err != nil {
+		return nil, err
+	}
+
+	return provider.Sum(nil), nil
+}
+
+// GetCustomHashFunc returns custom hash func
+func GetCustomHashFunc() twofa.IHashFunc {
+	customHashFunc := new(CustomHashFunc)
+	customHashFunc.Provider = sha256.New
+	return customHashFunc
+}
 
 func TestGetCode(t *testing.T) {
 	code, err := twofa.GetCode(mockKey)
@@ -67,7 +90,36 @@ func TestEncodeKey(t *testing.T) {
 	assert.Equal(t, mockRawKey, string(raw))
 }
 
+func TestEncodeKeyWithHash(t *testing.T) {
+	key := twofa.EncodeKey(mockRawKey, twofa.WithDefaultHashFunc())
+	t.Log("Key=", key)
+	assert.Equal(t, key, mockKeyWithHash)
+
+	code, err := twofa.GetCode(key)
+	if err != nil {
+		t.Fatal(err)
+	}
+	t.Log("Code=", code)
+
+	rawHash, err := twofa.DecodeKey(key)
+	if err != nil {
+		t.Fatal(err)
+	}
+	t.Logf("RawHash=%x", string(rawHash))
+}
+
 func TestEncodeKeyForIOS(t *testing.T) {
 	key := twofa.EncodeKeyForIOS(mockRawKey)
 	t.Log("Key=", key)
+}
+
+func TestEncodeKeyWithHashForIOS(t *testing.T) {
+	key := twofa.EncodeKeyForIOS(mockRawKey, twofa.WithHashFunc(GetCustomHashFunc()))
+	t.Log("Key=", key)
+
+	rawHash, err := twofa.DecodeKey(key)
+	if err != nil {
+		t.Fatal(err)
+	}
+	t.Logf("RawHash=%x", string(rawHash))
 }

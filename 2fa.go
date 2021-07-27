@@ -45,13 +45,21 @@ func GetCodeByRaw(key Key) (uint32, error) {
 }
 
 // EncodeKey returns encoded key
-func EncodeKey(raw string) string {
+func EncodeKey(raw string, opt ...OptionFunc) string {
+	opts := NewOptions(opt...)
+	if opts.WithHash {
+		digest, err := opts.HashFunc.Hash([]byte(raw))
+		if err != nil {
+			return ""
+		}
+		return strings.ToUpper(base32.StdEncoding.EncodeToString(digest))
+	}
 	return strings.ToUpper(base32.StdEncoding.EncodeToString([]byte(raw)))
 }
 
 // EncodeKeyForIOS returns encoded key for iOS
-func EncodeKeyForIOS(raw string) string {
-	return strings.ReplaceAll(EncodeKey(raw), "=", "")
+func EncodeKeyForIOS(raw string, opt ...OptionFunc) string {
+	return strings.ReplaceAll(EncodeKey(raw, opt...), "=", "")
 }
 
 // padding returns string with padding for base32
