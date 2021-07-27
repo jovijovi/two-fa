@@ -1,6 +1,7 @@
 # Two-FA
 
-A two-factor authentication(2FA) based on [HOTP](https://datatracker.ietf.org/doc/html/rfc4226) & [TOTP](https://datatracker.ietf.org/doc/html/rfc6238) written in Go.
+A two-factor authentication(2FA) based on [HOTP](https://datatracker.ietf.org/doc/html/rfc4226)
+& [TOTP](https://datatracker.ietf.org/doc/html/rfc6238) written in Go.
 
 ## Features
 
@@ -8,6 +9,9 @@ A two-factor authentication(2FA) based on [HOTP](https://datatracker.ietf.org/do
 - Get code by encoded key
 - Encode/Decode key
 - Encode key for iOS
+- Encode key with hash
+- Gen random key
+- Print QR for Google Authenticator in terminal
 
 ## Install
 
