@@ -55,7 +55,7 @@ func WithHashFunc(hashFunc IHashFunc) OptionFunc {
 	}
 }
 
-// WithQR option to configure hash function
+// WithQR option to configure QR
 func WithQR(name string) OptionFunc {
 	return func(o *Options) {
 		o.KeyName = name
