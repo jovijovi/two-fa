@@ -37,12 +37,18 @@ type Key struct {
 }
 
 // GetCode returns time based code by encode key
-func GetCode(key string) (uint32, error) {
+func GetCode(key string) (string, error) {
 	raw, err := DecodeKey(key)
 	if err != nil {
-		return 0, err
+		return "", err
 	}
-	return tOTP(raw, time.Now(), CodeDigits6)
+
+	code, err := tOTP(raw, time.Now(), CodeDigits6)
+	if err != nil {
+		return "", err
+	}
+
+	return fmt.Sprintf("%06d", code), nil
 }
 
 // GetCodeByRaw returns time based code by raw key
